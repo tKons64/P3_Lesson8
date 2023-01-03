@@ -1,11 +1,11 @@
-package me.tretyakovv.p3_lesson7.controllers;
+package me.tretyakovv.p3_lesson8.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.tretyakovv.p3_lesson7.model.Recipe;
-import me.tretyakovv.p3_lesson7.services.RecipeService;
+import me.tretyakovv.p3_lesson8.model.Recipe;
+import me.tretyakovv.p3_lesson8.services.RecipeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

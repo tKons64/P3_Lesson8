@@ -1,17 +1,16 @@
-package me.tretyakovv.p3_lesson7.services.impl;
+package me.tretyakovv.p3_lesson8.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.tretyakovv.p3_lesson7.model.Ingredient;
-import me.tretyakovv.p3_lesson7.model.Recipe;
-import me.tretyakovv.p3_lesson7.services.FilesService;
-import me.tretyakovv.p3_lesson7.services.IngredientService;
-import me.tretyakovv.p3_lesson7.services.RecipeService;
+import me.tretyakovv.p3_lesson8.model.Ingredient;
+import me.tretyakovv.p3_lesson8.model.Recipe;
+import me.tretyakovv.p3_lesson8.services.FilesService;
+import me.tretyakovv.p3_lesson8.services.IngredientService;
+import me.tretyakovv.p3_lesson8.services.RecipeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 

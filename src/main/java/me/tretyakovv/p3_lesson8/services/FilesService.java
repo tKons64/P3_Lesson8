@@ -1,4 +1,4 @@
-package me.tretyakovv.p3_lesson7.services;
+package me.tretyakovv.p3_lesson8.services;
 
 public interface FilesService {
     boolean saveToFile(String json);
