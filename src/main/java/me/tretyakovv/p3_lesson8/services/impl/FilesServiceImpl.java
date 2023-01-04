@@ -4,6 +4,7 @@ import me.tretyakovv.p3_lesson8.services.FilesService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,5 +49,10 @@ public class FilesServiceImpl implements FilesService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public File getDataFile() {
+        return new File(dataFilePath + "/" + dataFileName);
     }
 }
