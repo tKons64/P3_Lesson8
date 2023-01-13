@@ -1,4 +1,4 @@
-package me.tretyakovv.p3_lesson7.model;
+package me.tretyakovv.p3_lesson8.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

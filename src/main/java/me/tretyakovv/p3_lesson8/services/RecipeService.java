@@ -1,6 +1,6 @@
-package me.tretyakovv.p3_lesson7.services;
+package me.tretyakovv.p3_lesson8.services;
 
-import me.tretyakovv.p3_lesson7.model.Recipe;
+import me.tretyakovv.p3_lesson8.model.Recipe;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,4 +23,8 @@ public interface RecipeService {
     Recipe findRecipeByIngrediantId(long idIngrediant);
 
     List<Recipe> findRecipesByIngrediants(long[] arrIngredientsId);
+
+    void externalSaveToFile();
+
+    String getDataFileName();
 }
