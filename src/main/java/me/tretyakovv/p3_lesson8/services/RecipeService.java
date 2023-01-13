@@ -23,4 +23,8 @@ public interface RecipeService {
     Recipe findRecipeByIngrediantId(long idIngrediant);
 
     List<Recipe> findRecipesByIngrediants(long[] arrIngredientsId);
+
+    void externalSaveToFile();
+
+    String getDataFileName();
 }

@@ -8,6 +8,7 @@ import me.tretyakovv.p3_lesson8.model.Recipe;
 import me.tretyakovv.p3_lesson8.services.FilesService;
 import me.tretyakovv.p3_lesson8.services.RecipeService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +23,9 @@ public class RecipeServiceImpl implements RecipeService {
     private long lasdId = 0L;
 
     static HashMap<Long, Recipe> listRecipe = new HashMap<>();
+
+    @Value("${name.of.file.recipes}")
+    private String dataFileName;
 
     private FilesService filesService;
 
@@ -108,10 +112,20 @@ public class RecipeServiceImpl implements RecipeService {
         return listRecipes;
     }
 
+    @Override
+    public void externalSaveToFile() {
+        saveToFile();
+    }
+
+    @Override
+    public String getDataFileName() {
+        return dataFileName;
+    }
+
     private void saveToFile() {
         try {
             String json = new ObjectMapper().writeValueAsString(listRecipe);
-            filesService.saveToFile(json);
+            filesService.saveToFile(json, dataFileName);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +133,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     private void readFromFile() {
-        String json = filesService.readFromFile();
+        String json = filesService.readFromFile(dataFileName);
         try {
             listRecipe = new ObjectMapper().readValue(json, new TypeReference<HashMap<Long, Recipe>>() {
             });

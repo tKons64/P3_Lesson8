@@ -1,6 +1,8 @@
 package me.tretyakovv.p3_lesson8.controllers;
 
 import me.tretyakovv.p3_lesson8.services.FilesService;
+import me.tretyakovv.p3_lesson8.services.IngredientService;
+import me.tretyakovv.p3_lesson8.services.RecipeService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -18,21 +20,23 @@ public class FilesController {
 
     private final FilesService filesService;
 
+    private final RecipeService recipeService;
 
-    public FilesController(FilesService filesService) {
+    private final IngredientService ingredientService;
+
+    public FilesController(FilesService filesService, RecipeService recipeService, IngredientService ingredientService) {
         this.filesService = filesService;
+        this.recipeService = recipeService;
+        this.ingredientService = ingredientService;
     }
 
-    @GetMapping(value = "/export",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InputStreamResource> dowloadDataFile() throws FileNotFoundException {
-        File file = filesService.getDataFile();
+    public ResponseEntity<InputStreamResource> downloadDataFile(String dataFileName) throws FileNotFoundException {
+        File file = filesService.getDataFile(dataFileName);
 
         if (file.exists()) {
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
             return ResponseEntity.ok()
-                    //.contentType(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; ")
-                    //.header(HttpHeaders.CONTENT_DISPOSITION, "")
                     .contentLength(file.length())
                     .body(resource);
         } else {
@@ -40,11 +44,10 @@ public class FilesController {
         }
     }
 
-    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadDataFile(@RequestParam MultipartFile file){
+    public ResponseEntity<Void> uploadDataFile(MultipartFile file, String dataFileName){
 
-        File dataFile = filesService.getDataFile();
-        filesService.cleanDataFile();
+        File dataFile = filesService.getDataFile(dataFileName);
+        filesService.cleanDataFile(dataFileName);
 
         try (FileOutputStream fos = new FileOutputStream(dataFile)){
             IOUtils.copy(file.getInputStream(), fos);
@@ -54,4 +57,26 @@ public class FilesController {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+
+    @GetMapping(value = "/exportRecipe",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<InputStreamResource> downloadRecipe() throws FileNotFoundException {
+        return downloadDataFile(recipeService.getDataFileName());
+    }
+
+    @GetMapping(value = "/exportIngredient",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<InputStreamResource> downloadIngredient() throws FileNotFoundException {
+        return downloadDataFile(ingredientService.getDataFileName());
+    }
+
+
+    @PostMapping(value = "/importRecipe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadRecipe(@RequestParam MultipartFile file){
+        return uploadDataFile(file, recipeService.getDataFileName());
+    }
+
+    @PostMapping(value = "/importIngredient", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadIngredient(@RequestParam MultipartFile file){
+        return uploadDataFile(file, ingredientService.getDataFileName());
+    }
+
 }

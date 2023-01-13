@@ -17,4 +17,6 @@ public interface IngredientService {
     boolean deleteIngredient(long idIngredient);
 
     List<Ingredient> getAllIngredientByPage(int numberPage);
+
+    String getDataFileName();
 }

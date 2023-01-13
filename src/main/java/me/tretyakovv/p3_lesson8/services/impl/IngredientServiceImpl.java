@@ -1,6 +1,7 @@
 package me.tretyakovv.p3_lesson8.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.tretyakovv.p3_lesson8.model.Ingredient;
 import me.tretyakovv.p3_lesson8.model.Recipe;
@@ -8,8 +9,10 @@ import me.tretyakovv.p3_lesson8.services.FilesService;
 import me.tretyakovv.p3_lesson8.services.IngredientService;
 import me.tretyakovv.p3_lesson8.services.RecipeService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +21,11 @@ import java.util.List;
 public class IngredientServiceImpl implements IngredientService {
 
     private long lasdId = 0L;
+
+    static HashMap<Long, Ingredient> listIngredient = new HashMap<>();
+
+    @Value("${name.of.file.ingredients}")
+    private String dataFileName;
 
     private RecipeService recipeService;
 
@@ -28,17 +36,25 @@ public class IngredientServiceImpl implements IngredientService {
         this.filesService = filesService;
     }
 
+    @PostConstruct
+    private void init() {
+        readFromFile();
+    }
+
     @Override
     public long addIngredient(Recipe recipe, Ingredient ingredient) {
         if (StringUtils.isEmpty(ingredient.getTitle())) {
             return -1L;
         }
-        HashMap<Long, Ingredient> listIngredients = recipe.getIngredients();
-        if (listIngredients == null) {
-            listIngredients = new HashMap<>();
+        HashMap<Long, Ingredient> recipeIngredients = recipe.getIngredients();
+        if (recipeIngredients == null) {
+            recipeIngredients = new HashMap<>();
         }
-        listIngredients.put(lasdId, ingredient);
-        recipe.setIngredients(listIngredients);
+        recipeIngredients.put(lasdId, ingredient);
+        recipe.setIngredients(recipeIngredients);
+        recipeService.externalSaveToFile();
+
+        listIngredient.put(lasdId, ingredient);
         saveToFile();
         return lasdId++;
     }
@@ -105,13 +121,37 @@ public class IngredientServiceImpl implements IngredientService {
         return listIngredientLimited;
     }
 
+    @Override
+    public String getDataFileName() {
+        return dataFileName;
+    }
+
     private void saveToFile() {
         try {
-            String json = new ObjectMapper().writeValueAsString(recipeService.getRecipes());
-            filesService.saveToFile(json);
+            String json = new ObjectMapper().writeValueAsString(listIngredient);
+            filesService.saveToFile(json, dataFileName);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
     }
+
+    private void readFromFile() {
+        String json = filesService.readFromFile(dataFileName);
+        try {
+            listIngredient = new ObjectMapper().readValue(json, new TypeReference<HashMap<Long, Ingredient>>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        for (Long aLong : listIngredient.keySet()) {
+            if (lasdId < aLong) {
+                lasdId = aLong;
+            }
+        }
+        if (lasdId > 0L) {
+            lasdId++;
+        }
+    }
 }
+
